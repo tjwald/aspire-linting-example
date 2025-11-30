@@ -19,13 +19,13 @@ var builder = DistributedApplication.CreateBuilder(args)
 
 var cache = builder.AddRedis("cache");
 
-var app = builder.AddUvicornApp("app", "./app", "main:app")
-    .WithUv()
+var app = builder.AddUvicornApp("app", "./app", "app.main:app")
+    .WithUv(args: ["sync", "--all-groups"])
     .WithExternalHttpEndpoints()
     .WithReference(cache)
     .WaitFor(cache)
     .WithHttpHealthCheck("/health")
-    .WithUvInstallationStep("./app")
+    .WithUvInstallationStep("./app", ["--all-groups"])
     .WithUvLintingSteps([
         ("ruff", ["check"]),
         ("mypy", ["."])
